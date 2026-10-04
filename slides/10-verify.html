@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8"><title>08-verify</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1080px;height:1920px;overflow:hidden;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:#05070f;color:#e8ecf8;position:relative}
+.bg{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 8%,#111a3d 0%,transparent 62%),
+    radial-gradient(ellipse 70% 45% at 18% 88%,#0d1830 0%,transparent 65%),
+    linear-gradient(180deg,#05070f 0%,#080d1e 48%,#04060e 100%)}
+.stars{position:absolute;inset:0;opacity:.5}
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;padding:104px 76px 150px}
+.eyebrow{font-family:"SF Mono",Consolas,monospace;font-size:23px;letter-spacing:.32em;
+  color:#7aa2ff;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:18px}
+.eyebrow::after{content:'';flex:1;height:2px;background:linear-gradient(90deg,#7aa2ff,transparent)}
+h1{font-size:104px;line-height:1.04;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(100deg,#fff 0%,#9fc0ff 42%,#ffd166 78%,#ff9ec7 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:32px}
+h2{font-size:58px;line-height:1.14;font-weight:800;margin-bottom:20px;color:#fff}
+.lede{font-size:32px;line-height:1.66;color:#a8b4d8;margin-bottom:44px}
+.body{font-size:28px;line-height:1.78;color:#c3cce8}
+.mono{font-family:"SF Mono",Consolas,monospace}
+.hl{color:#ffd166;font-weight:700}
+.hl2{color:#7aa2ff;font-weight:700}
+.hl3{color:#7ee787;font-weight:700}
+.muted{color:#6b779e}
+.card{background:linear-gradient(160deg,rgba(20,28,58,.94),rgba(12,17,36,.94));
+  border:1px solid #232e56;border-radius:24px;padding:32px 34px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.stat{background:linear-gradient(160deg,rgba(20,28,58,.94),rgba(12,17,36,.94));
+  border:1px solid #232e56;border-radius:22px;padding:28px 22px;text-align:center}
+.stat .v{font-family:"SF Mono",Consolas,monospace;font-size:50px;font-weight:700;
+  color:#ffd166;line-height:1.08;margin-bottom:10px;letter-spacing:-.02em}
+.stat .l{font-size:20px;color:#8b98be;line-height:1.42}
+table{width:100%;border-collapse:collapse;font-family:"SF Mono",Consolas,monospace;font-size:23px}
+th{text-align:left;padding:14px 12px;color:#7f8cb4;font-weight:600;
+  border-bottom:2px solid #2b3765;font-size:20px;letter-spacing:.05em}
+td{padding:14px 12px;border-bottom:1px solid #1a2344;color:#dfe6f8}
+tr:last-child td{border-bottom:none}
+td.n{text-align:right}
+.tag{display:inline-block;font-family:"SF Mono",Consolas,monospace;font-size:18px;
+  padding:4px 12px;border-radius:9px}
+.tag.ok{background:rgba(126,231,135,.14);color:#7ee787;border:1px solid rgba(126,231,135,.34)}
+.tag.no{background:rgba(255,107,107,.14);color:#ff8f8f;border:1px solid rgba(255,107,107,.34)}
+.foot{position:absolute;left:76px;right:76px;bottom:56px;display:flex;justify-content:space-between;
+  align-items:center;font-family:"SF Mono",Consolas,monospace;font-size:20px;color:#4e5878;
+  border-top:1px solid #1a2344;padding-top:24px}
+.shot{width:100%;border-radius:18px;border:1px solid #232e56;display:block;max-height:1080px;object-fit:cover}
+.cap{font-size:20px;color:#7f8cb4;margin-top:14px;text-align:center;line-height:1.5}
+.bar{height:30px;background:#131b3a;border-radius:8px;overflow:hidden}
+.bar>div{height:100%;border-radius:8px}
+.spacer{flex:1;min-height:8px}
+ul{list-style:none}
+li{font-size:27px;line-height:1.6;color:#c3cce8;padding-left:42px;position:relative;margin-bottom:20px}
+li::before{content:'▸';position:absolute;left:0;color:#7aa2ff;font-weight:700}
+.kv{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:1px solid #1a2344}
+.kv:last-child{border-bottom:none}
+.kv .k{font-size:25px;color:#9aa6cc}
+.kv .v{font-family:"SF Mono",Consolas,monospace;font-size:27px;color:#fff;font-weight:600}
+.lbl{font-family:"SF Mono",Consolas,monospace;font-size:22px;color:#8b98be;margin-bottom:18px}
+.quote{border-left:5px solid #7aa2ff;padding-left:30px;font-size:29px;line-height:1.7;color:#dfe6f8}
+</style></head><body>
+<div class="bg"></div><svg class="stars" viewBox="0 0 1080 1920"><circle cx="431.4" cy="1873.2" r="1.93" fill="#cfe0ff" opacity="0.62"/><circle cx="567.3" cy="384.4" r="2.36" fill="#cfe0ff" opacity="0.36"/><circle cx="645.6" cy="11.7" r="1.56" fill="#cfe0ff" opacity="0.48"/><circle cx="127.9" cy="192.1" r="1.07" fill="#cfe0ff" opacity="0.52"/><circle cx="806.9" cy="1771.9" r="0.67" fill="#cfe0ff" opacity="0.42"/><circle cx="263.3" cy="1488.1" r="2.59" fill="#cfe0ff" opacity="0.45"/><circle cx="72.8" cy="1732.5" r="1.22" fill="#cfe0ff" opacity="0.50"/><circle cx="73.8" cy="948.6" r="1.04" fill="#cfe0ff" opacity="0.47"/><circle cx="894.6" cy="454.1" r="1.18" fill="#cfe0ff" opacity="0.21"/><circle cx="80.1" cy="1334.7" r="1.30" fill="#cfe0ff" opacity="0.37"/><circle cx="916.6" cy="7.6" r="2.03" fill="#cfe0ff" opacity="0.42"/><circle cx="1060.9" cy="577.0" r="1.89" fill="#cfe0ff" opacity="0.47"/><circle cx="931.2" cy="545.9" r="0.92" fill="#cfe0ff" opacity="0.30"/><circle cx="88.2" cy="1359.4" r="2.48" fill="#cfe0ff" opacity="0.13"/><circle cx="193.0" cy="1228.4" r="1.44" fill="#cfe0ff" opacity="0.44"/><circle cx="408.4" cy="795.7" r="1.69" fill="#cfe0ff" opacity="0.48"/><circle cx="84.6" cy="1473.6" r="1.53" fill="#cfe0ff" opacity="0.40"/><circle cx="152.8" cy="1262.2" r="0.73" fill="#cfe0ff" opacity="0.39"/><circle cx="990.4" cy="1081.7" r="1.50" fill="#cfe0ff" opacity="0.33"/><circle cx="23.0" cy="1240.4" r="0.51" fill="#cfe0ff" opacity="0.48"/><circle cx="802.5" cy="871.8" r="1.87" fill="#cfe0ff" opacity="0.44"/><circle cx="541.2" cy="1345.3" r="1.68" fill="#cfe0ff" opacity="0.40"/><circle cx="1075.0" cy="1330.2" r="1.51" fill="#cfe0ff" opacity="0.51"/><circle cx="599.5" cy="1099.0" r="0.97" fill="#cfe0ff" opacity="0.36"/><circle cx="609.3" cy="1014.0" r="0.72" fill="#cfe0ff" opacity="0.50"/><circle cx="17.7" cy="1545.7" r="1.87" fill="#cfe0ff" opacity="0.64"/><circle cx="683.7" cy="697.1" r="2.47" fill="#cfe0ff" opacity="0.38"/><circle cx="122.3" cy="941.0" r="1.48" fill="#cfe0ff" opacity="0.29"/><circle cx="434.8" cy="1007.8" r="1.71" fill="#cfe0ff" opacity="0.43"/><circle cx="984.3" cy="1403.0" r="2.03" fill="#cfe0ff" opacity="0.65"/><circle cx="936.8" cy="1632.8" r="0.97" fill="#cfe0ff" opacity="0.62"/><circle cx="903.0" cy="1901.7" r="1.46" fill="#cfe0ff" opacity="0.35"/><circle cx="931.7" cy="666.4" r="1.69" fill="#cfe0ff" opacity="0.55"/><circle cx="14.6" cy="1197.7" r="1.82" fill="#cfe0ff" opacity="0.16"/><circle cx="543.0" cy="302.9" r="1.90" fill="#cfe0ff" opacity="0.21"/><circle cx="552.0" cy="389.4" r="1.21" fill="#cfe0ff" opacity="0.41"/><circle cx="151.3" cy="1582.9" r="2.50" fill="#cfe0ff" opacity="0.14"/><circle cx="27.5" cy="1476.6" r="0.94" fill="#cfe0ff" opacity="0.61"/><circle cx="367.7" cy="220.0" r="1.94" fill="#cfe0ff" opacity="0.48"/><circle cx="363.1" cy="1217.1" r="0.98" fill="#cfe0ff" opacity="0.40"/><circle cx="556.6" cy="431.0" r="1.08" fill="#cfe0ff" opacity="0.39"/><circle cx="31.2" cy="1380.4" r="1.41" fill="#cfe0ff" opacity="0.53"/><circle cx="793.5" cy="1401.6" r="0.87" fill="#cfe0ff" opacity="0.30"/><circle cx="260.0" cy="1351.5" r="0.79" fill="#cfe0ff" opacity="0.56"/><circle cx="715.4" cy="1866.4" r="0.80" fill="#cfe0ff" opacity="0.30"/><circle cx="851.4" cy="445.0" r="0.72" fill="#cfe0ff" opacity="0.20"/><circle cx="819.0" cy="974.9" r="2.13" fill="#cfe0ff" opacity="0.61"/><circle cx="549.4" cy="1322.3" r="0.70" fill="#cfe0ff" opacity="0.35"/><circle cx="906.1" cy="1665.3" r="1.94" fill="#cfe0ff" opacity="0.56"/><circle cx="964.7" cy="1336.9" r="1.99" fill="#cfe0ff" opacity="0.67"/><circle cx="941.8" cy="604.2" r="1.70" fill="#cfe0ff" opacity="0.23"/><circle cx="982.6" cy="1100.5" r="0.78" fill="#cfe0ff" opacity="0.34"/><circle cx="309.4" cy="1837.4" r="1.42" fill="#cfe0ff" opacity="0.24"/><circle cx="974.9" cy="618.3" r="0.95" fill="#cfe0ff" opacity="0.54"/><circle cx="719.2" cy="712.8" r="2.05" fill="#cfe0ff" opacity="0.47"/><circle cx="558.2" cy="1800.1" r="0.56" fill="#cfe0ff" opacity="0.27"/><circle cx="988.9" cy="581.9" r="1.25" fill="#cfe0ff" opacity="0.59"/><circle cx="915.8" cy="1224.3" r="1.18" fill="#cfe0ff" opacity="0.48"/><circle cx="563.5" cy="318.5" r="1.06" fill="#cfe0ff" opacity="0.28"/><circle cx="451.5" cy="673.7" r="1.10" fill="#cfe0ff" opacity="0.18"/><circle cx="242.7" cy="129.3" r="1.04" fill="#cfe0ff" opacity="0.17"/><circle cx="639.8" cy="424.0" r="2.50" fill="#cfe0ff" opacity="0.32"/><circle cx="132.9" cy="1534.9" r="2.53" fill="#cfe0ff" opacity="0.43"/><circle cx="21.2" cy="1223.5" r="1.42" fill="#cfe0ff" opacity="0.30"/><circle cx="609.6" cy="1608.2" r="1.87" fill="#cfe0ff" opacity="0.13"/><circle cx="296.2" cy="67.6" r="2.27" fill="#cfe0ff" opacity="0.60"/><circle cx="588.7" cy="804.6" r="1.74" fill="#cfe0ff" opacity="0.18"/><circle cx="940.1" cy="88.2" r="1.87" fill="#cfe0ff" opacity="0.37"/><circle cx="196.5" cy="977.8" r="1.36" fill="#cfe0ff" opacity="0.21"/><circle cx="1034.9" cy="521.8" r="2.15" fill="#cfe0ff" opacity="0.28"/><circle cx="518.4" cy="1279.5" r="0.61" fill="#cfe0ff" opacity="0.50"/><circle cx="827.3" cy="302.9" r="1.38" fill="#cfe0ff" opacity="0.42"/><circle cx="754.5" cy="1059.9" r="2.39" fill="#cfe0ff" opacity="0.23"/><circle cx="144.9" cy="578.4" r="1.83" fill="#cfe0ff" opacity="0.19"/><circle cx="84.9" cy="1474.8" r="0.78" fill="#cfe0ff" opacity="0.39"/><circle cx="133.7" cy="1908.6" r="2.52" fill="#cfe0ff" opacity="0.58"/><circle cx="829.5" cy="1406.7" r="2.47" fill="#cfe0ff" opacity="0.24"/><circle cx="705.9" cy="118.8" r="2.07" fill="#cfe0ff" opacity="0.45"/><circle cx="1014.8" cy="70.3" r="0.66" fill="#cfe0ff" opacity="0.43"/><circle cx="1039.6" cy="1224.7" r="1.95" fill="#cfe0ff" opacity="0.28"/><circle cx="680.7" cy="1201.5" r="1.28" fill="#cfe0ff" opacity="0.22"/><circle cx="599.5" cy="1723.7" r="1.75" fill="#cfe0ff" opacity="0.28"/><circle cx="869.2" cy="728.2" r="2.13" fill="#cfe0ff" opacity="0.63"/><circle cx="562.3" cy="1398.0" r="1.17" fill="#cfe0ff" opacity="0.26"/><circle cx="669.9" cy="1530.7" r="1.45" fill="#cfe0ff" opacity="0.43"/><circle cx="1.7" cy="1369.2" r="1.55" fill="#cfe0ff" opacity="0.18"/><circle cx="381.1" cy="1668.4" r="1.26" fill="#cfe0ff" opacity="0.46"/><circle cx="231.3" cy="1745.8" r="0.68" fill="#cfe0ff" opacity="0.40"/><circle cx="162.8" cy="415.1" r="1.05" fill="#cfe0ff" opacity="0.45"/><circle cx="160.5" cy="122.3" r="0.79" fill="#cfe0ff" opacity="0.14"/><circle cx="882.9" cy="1142.0" r="2.15" fill="#cfe0ff" opacity="0.21"/><circle cx="172.4" cy="372.0" r="1.26" fill="#cfe0ff" opacity="0.31"/><circle cx="1002.1" cy="820.9" r="1.91" fill="#cfe0ff" opacity="0.46"/><circle cx="956.2" cy="1500.1" r="2.50" fill="#cfe0ff" opacity="0.17"/><circle cx="861.1" cy="1673.9" r="2.22" fill="#cfe0ff" opacity="0.60"/><circle cx="387.3" cy="1848.2" r="1.58" fill="#cfe0ff" opacity="0.54"/><circle cx="938.0" cy="1834.5" r="0.59" fill="#cfe0ff" opacity="0.43"/><circle cx="347.2" cy="1505.4" r="1.49" fill="#cfe0ff" opacity="0.46"/><circle cx="514.7" cy="1835.6" r="1.31" fill="#cfe0ff" opacity="0.36"/><circle cx="848.8" cy="1384.4" r="0.69" fill="#cfe0ff" opacity="0.26"/><circle cx="129.8" cy="383.3" r="0.82" fill="#cfe0ff" opacity="0.67"/><circle cx="41.1" cy="1280.5" r="0.92" fill="#cfe0ff" opacity="0.51"/><circle cx="407.9" cy="1458.4" r="0.71" fill="#cfe0ff" opacity="0.52"/><circle cx="378.0" cy="424.0" r="1.54" fill="#cfe0ff" opacity="0.38"/><circle cx="558.7" cy="105.4" r="0.83" fill="#cfe0ff" opacity="0.40"/><circle cx="334.9" cy="769.0" r="1.90" fill="#cfe0ff" opacity="0.27"/><circle cx="683.4" cy="1153.8" r="2.29" fill="#cfe0ff" opacity="0.61"/><circle cx="672.1" cy="628.4" r="1.21" fill="#cfe0ff" opacity="0.33"/><circle cx="264.1" cy="679.7" r="0.55" fill="#cfe0ff" opacity="0.43"/><circle cx="480.3" cy="582.8" r="0.92" fill="#cfe0ff" opacity="0.30"/><circle cx="944.0" cy="216.9" r="1.76" fill="#cfe0ff" opacity="0.37"/><circle cx="316.1" cy="454.7" r="2.14" fill="#cfe0ff" opacity="0.35"/><circle cx="810.9" cy="783.5" r="1.81" fill="#cfe0ff" opacity="0.38"/><circle cx="570.9" cy="1487.8" r="1.57" fill="#cfe0ff" opacity="0.24"/><circle cx="627.6" cy="345.3" r="1.35" fill="#cfe0ff" opacity="0.49"/><circle cx="179.0" cy="936.5" r="2.28" fill="#cfe0ff" opacity="0.49"/><circle cx="765.8" cy="631.9" r="0.71" fill="#cfe0ff" opacity="0.33"/><circle cx="106.5" cy="268.3" r="2.14" fill="#cfe0ff" opacity="0.30"/><circle cx="19.3" cy="1511.9" r="1.75" fill="#cfe0ff" opacity="0.47"/><circle cx="123.1" cy="1335.2" r="1.23" fill="#cfe0ff" opacity="0.41"/><circle cx="347.0" cy="1583.8" r="1.33" fill="#cfe0ff" opacity="0.66"/><circle cx="868.6" cy="1574.3" r="2.59" fill="#cfe0ff" opacity="0.27"/><circle cx="409.6" cy="358.7" r="1.24" fill="#cfe0ff" opacity="0.43"/><circle cx="144.1" cy="335.0" r="1.94" fill="#cfe0ff" opacity="0.54"/><circle cx="1019.0" cy="69.1" r="1.30" fill="#cfe0ff" opacity="0.61"/><circle cx="294.7" cy="422.3" r="2.02" fill="#cfe0ff" opacity="0.60"/><circle cx="273.3" cy="908.7" r="1.99" fill="#cfe0ff" opacity="0.19"/><circle cx="488.9" cy="1029.5" r="0.92" fill="#cfe0ff" opacity="0.63"/><circle cx="553.1" cy="1032.2" r="1.49" fill="#cfe0ff" opacity="0.22"/><circle cx="332.3" cy="330.7" r="0.91" fill="#cfe0ff" opacity="0.39"/><circle cx="971.2" cy="23.4" r="1.57" fill="#cfe0ff" opacity="0.26"/><circle cx="372.0" cy="1105.0" r="2.17" fill="#cfe0ff" opacity="0.57"/><circle cx="165.7" cy="1300.5" r="1.07" fill="#cfe0ff" opacity="0.55"/><circle cx="791.3" cy="202.3" r="1.46" fill="#cfe0ff" opacity="0.57"/><circle cx="274.2" cy="1220.7" r="2.30" fill="#cfe0ff" opacity="0.53"/><circle cx="699.0" cy="183.4" r="1.50" fill="#cfe0ff" opacity="0.14"/><circle cx="764.2" cy="305.2" r="2.22" fill="#cfe0ff" opacity="0.38"/><circle cx="655.0" cy="1095.2" r="1.96" fill="#cfe0ff" opacity="0.37"/><circle cx="1078.0" cy="524.2" r="0.79" fill="#cfe0ff" opacity="0.47"/><circle cx="1036.1" cy="1466.2" r="2.26" fill="#cfe0ff" opacity="0.24"/><circle cx="128.6" cy="1269.0" r="1.45" fill="#cfe0ff" opacity="0.58"/><circle cx="263.5" cy="1276.6" r="2.00" fill="#cfe0ff" opacity="0.66"/><circle cx="63.6" cy="761.6" r="2.02" fill="#cfe0ff" opacity="0.28"/><circle cx="501.2" cy="991.3" r="0.72" fill="#cfe0ff" opacity="0.44"/><circle cx="325.2" cy="974.0" r="2.32" fill="#cfe0ff" opacity="0.57"/><circle cx="1009.8" cy="226.0" r="1.32" fill="#cfe0ff" opacity="0.54"/><circle cx="523.3" cy="546.8" r="1.67" fill="#cfe0ff" opacity="0.40"/><circle cx="297.4" cy="9.4" r="1.54" fill="#cfe0ff" opacity="0.60"/><circle cx="856.7" cy="969.5" r="2.55" fill="#cfe0ff" opacity="0.20"/><circle cx="1074.6" cy="789.4" r="2.34" fill="#cfe0ff" opacity="0.17"/><circle cx="903.8" cy="1455.8" r="2.51" fill="#cfe0ff" opacity="0.66"/><circle cx="296.0" cy="1611.3" r="1.14" fill="#cfe0ff" opacity="0.13"/><circle cx="238.6" cy="1300.0" r="1.30" fill="#cfe0ff" opacity="0.34"/><circle cx="241.3" cy="1323.8" r="2.48" fill="#cfe0ff" opacity="0.34"/><circle cx="991.4" cy="1890.1" r="2.25" fill="#cfe0ff" opacity="0.51"/><circle cx="253.3" cy="1690.8" r="2.48" fill="#cfe0ff" opacity="0.26"/><circle cx="535.8" cy="1637.4" r="2.07" fill="#cfe0ff" opacity="0.44"/><circle cx="815.8" cy="1260.8" r="1.74" fill="#cfe0ff" opacity="0.16"/><circle cx="525.9" cy="677.9" r="1.82" fill="#cfe0ff" opacity="0.55"/><circle cx="93.4" cy="1593.5" r="1.17" fill="#cfe0ff" opacity="0.27"/></svg>
+<div class="wrap">
+  <div class="eyebrow">Verification</div>
+  <h2>怎么证明它是对的</h2>
+  <div class="quote" style="margin-bottom:28px">
+    不靠"看着对"，靠
+    <span class="hl">与解析解逐点比对</span>、
+    <span class="hl2">与暴力解对拍</span>、
+    <span class="hl3">拿守恒量监控</span>。
+  </div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="lbl">十一组物理断言 · 全部通过</div>
+    <ul style="margin-top:4px">
+      <li style="font-size:24px;margin-bottom:14px">开普勒圆轨道与解析解逐点一致</li>
+      <li style="font-size:24px;margin-bottom:14px">四个积分器的实测收敛阶符合理论</li>
+      <li style="font-size:24px;margin-bottom:14px">辛方法能量误差有界振荡、非辛单调累积</li>
+      <li style="font-size:24px;margin-bottom:14px">Barnes–Hut 误差随 θ 按 O(θ²) 收敛</li>
+      <li style="font-size:24px;margin-bottom:14px">BH 长时间轨迹与暴力解一致</li>
+      <li style="font-size:24px;margin-bottom:14px">动量 / 角动量守恒到浮点精度</li>
+      <li style="font-size:24px;margin-bottom:14px">试探粒子语义正确（不受力但受力）</li>
+      <li style="font-size:24px;margin-bottom:0">同种子两次运行逐位一致（确定性）</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="lbl">浏览器端 · Playwright</div>
+    <div class="kv"><span class="k">八个场景加载与推进</span><span class="v" style="color:#7ee787">8 / 8</span></div>
+    <div class="kv"><span class="k">UI 控件（点击真实 DOM）</span><span class="v" style="color:#7ee787">全部生效</span></div>
+    <div class="kv"><span class="k">星系并合实际帧率</span><span class="v" style="color:#7ee787">25–40 FPS</span></div>
+    <div class="kv"><span class="k">断言总数</span><span class="v" style="color:#7ee787">41 + 54 = 95</span></div>
+    <div class="kv"><span class="k">截图产出</span><span class="v">横版 + 竖版各一套</span></div>
+  </div>
+  <div style="height:34px"></div>
+  <div class="card">
+    <div class="lbl">这套验证抓出过的真 bug</div>
+    <div class="body" style="font-size:23px">
+      · RK4 位置被累加四次，有效步长放大 3 倍<br>
+      · Barnes–Hut 节点分裂时父节点未清零，总质量被重复计入<br>
+      · PEFRL 的 drift/kick 顺序错，4 阶退化为 1 阶（误差差 75000 倍）<br>
+      · 圆共线构型下视口缩放退化到 10⁶，画面全黑
+    </div>
+  </div>
+</div>
+<div class="foot"><span>成果展示</span><span>10 / 10</span></div>
+</body></html>

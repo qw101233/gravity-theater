@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>引力剧场 · Gravity Arena</title>
+<style>
+/* ============================================================
+   暗色主题：深空背景 + 高对比数据面板
+   （科学可视化的默认选择：暗背景让发光天体和轨迹的动态范围最大化）
+   ============================================================ */
+:root{
+  --bg:#05070f; --bg2:#080b18; --panel:#0c1020; --panel2:#111731;
+  --line:#1e274a; --line2:#2b3765;
+  --fg:#e8ecf8; --fg2:#9aa6cc; --fg3:#66739e;
+  --accent:#7aa2ff; --accent2:#ffd166; --ok:#7ee787; --warn:#ff9f6b; --bad:#ff6b6b;
+  --mono:"SF Mono",'Cascadia Code',Consolas,'Liberation Mono',monospace;
+  --sans:"PingFang SC","Microsoft YaHei",-apple-system,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg); color:var(--fg); font-family:var(--sans);
+  font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+#app{display:flex;height:100vh;width:100vw}
+
+/* ---------- 左侧：画布 ---------- */
+#stage{flex:1;position:relative;min-width:0;background:var(--bg)}
+#view{width:100%;height:100%;display:block;touch-action:none}
+#hud{
+  position:absolute;left:14px;top:14px;pointer-events:none;
+  font-family:var(--mono);font-size:11px;color:var(--fg2);
+  background:rgba(6,9,20,.62);border:1px solid var(--line);
+  border-radius:8px;padding:9px 12px;backdrop-filter:blur(8px);
+  line-height:1.75;min-width:196px;
+}
+#hud b{color:var(--fg);font-weight:600}
+#hud .k{color:var(--fg3);display:inline-block;width:78px}
+#brand{
+  position:absolute;left:16px;bottom:14px;pointer-events:none;
+}
+#brand h1{
+  font-size:22px;font-weight:700;letter-spacing:.06em;
+  background:linear-gradient(96deg,#7aa2ff 0%,#ffd166 55%,#ff8fb1 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+#brand p{font-size:11px;color:var(--fg3);font-family:var(--mono);letter-spacing:.04em}
+#zoomhint{
+  position:absolute;right:14px;bottom:14px;font-family:var(--mono);font-size:10.5px;
+  color:var(--fg3);background:rgba(6,9,20,.55);border:1px solid var(--line);
+  border-radius:6px;padding:6px 10px;pointer-events:none;backdrop-filter:blur(6px);
+}
+
+/* ---------- 右侧：控制面板 ---------- */
+#panel{
+  width:352px;flex-shrink:0;background:var(--panel);
+  border-left:1px solid var(--line);overflow-y:auto;overflow-x:hidden;
+}
+#panel::-webkit-scrollbar{width:8px}
+#panel::-webkit-scrollbar-track{background:var(--bg2)}
+#panel::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+.sec{border-bottom:1px solid var(--line);padding:13px 15px}
+.sec-h{
+  font-size:10.5px;font-weight:700;letter-spacing:.16em;color:var(--fg3);
+  text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:7px;
+}
+.sec-h::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* 预设列表 */
+#preset-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.preset-btn{
+  background:var(--panel2);border:1px solid var(--line);border-radius:7px;
+  padding:8px 9px;cursor:pointer;text-align:left;color:var(--fg2);
+  font-family:var(--sans);transition:.14s;display:flex;flex-direction:column;gap:2px;
+}
+.preset-btn:hover{border-color:var(--line2);background:#151b38;color:var(--fg)}
+.preset-btn.on{border-color:var(--accent);background:#152048;color:var(--fg);
+  box-shadow:inset 0 0 0 1px rgba(122,162,255,.22)}
+.preset-btn .pn{font-size:12px;font-weight:600}
+.preset-btn .pt{font-size:9.5px;color:var(--fg3)}
+.preset-btn.on .pt{color:var(--accent)}
+
+#preset-info{margin-top:10px;background:var(--bg2);border:1px solid var(--line);
+  border-radius:7px;padding:9px 10px}
+#preset-name{font-size:14px;font-weight:700;margin-bottom:2px}
+#preset-tag{display:inline-block;font-size:9.5px;color:var(--accent);
+  border:1px solid rgba(122,162,255,.35);border-radius:4px;padding:1px 6px;margin-bottom:6px}
+#preset-desc{font-size:11.5px;color:var(--fg2);line-height:1.62}
+#preset-verify{font-family:var(--mono);font-size:10px;color:var(--ok);margin-top:6px}
+
+/* 控件 */
+.row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.row:last-child{margin-bottom:0}
+.row label{font-size:11px;color:var(--fg2);flex-shrink:0;min-width:56px}
+.row .val{font-family:var(--mono);font-size:10.5px;color:var(--accent);
+  min-width:50px;text-align:right;flex-shrink:0}
+input[type=range]{
+  flex:1;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;
+  background:var(--line2);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:var(--accent);cursor:pointer;border:2px solid #0a0e1e;
+  box-shadow:0 0 6px rgba(122,162,255,.5);
+}
+select{
+  flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--fg);
+  font-family:var(--mono);font-size:11px;padding:5px 7px;border-radius:5px;outline:none;cursor:pointer;
+}
+select:focus{border-color:var(--accent)}
+button.b{
+  flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--fg);
+  padding:7px 9px;border-radius:6px;cursor:pointer;font-family:var(--sans);
+  font-size:11.5px;font-weight:600;transition:.14s;
+}
+button.b:hover{background:#1a2246;border-color:var(--line2)}
+button.b:active{transform:translateY(1px)}
+button.b.paused{background:#2a1e10;border-color:#5a4020;color:var(--accent2)}
+.chk{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--fg2);cursor:pointer;padding:3px 0}
+.chk input{accent-color:var(--accent);width:13px;height:13px;cursor:pointer}
+
+/* 诊断面板 */
+#diag{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-family:var(--mono);font-size:11px}
+#diag .k{color:var(--fg3)}
+#diag .v{color:var(--fg);text-align:right}
+#diag .sep{grid-column:1/-1;height:1px;background:var(--line);margin:6px 0}
+#note{font-size:10.5px;color:var(--fg3);line-height:1.6;margin-top:8px;
+  padding:7px 9px;background:var(--bg2);border-radius:6px;border-left:2px solid var(--line2)}
+#cfg{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-family:var(--mono);font-size:10.5px}
+#cfg .k{color:var(--fg3)}
+#cfg .v{color:var(--fg2);text-align:right}
+.kbd{font-family:var(--mono);font-size:9.5px;background:var(--panel2);
+  border:1px solid var(--line2);border-radius:3px;padding:1px 4px;color:var(--fg2)}
+
+@media (max-width:900px){
+  #app{flex-direction:column}
+  #panel{width:100%;height:46vh;border-left:none;border-top:1px solid var(--line)}
+  #preset-list{grid-template-columns:1fr 1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <canvas id="view"></canvas>
+    <div id="hud">
+      <div><span class="k">t</span><b id="d-time">0</b></div>
+      <div><span class="k">N</span><b id="d-n">0</b></div>
+      <div><span class="k">FPS</span><b id="d-fps">0</b></div>
+      <div><span class="k">物理</span><b id="d-step">0</b> ms</div>
+      <div><span class="k">整帧</span><b id="d-frame">0</b> ms</div>
+    </div>
+    <div id="brand">
+      <h1>引力剧场</h1>
+      <p>GRAVITY ARENA · N-BODY SANDBOX</p>
+    </div>
+    <div id="zoomhint">滚轮缩放 · 拖拽平移 · 空格暂停 · F 适配 · R 重置 · C 清轨迹</div>
+  </div>
+
+  <div id="panel">
+    <!-- 场景 -->
+    <div class="sec">
+      <div class="sec-h">场景</div>
+      <div id="preset-list"></div>
+      <div id="preset-info">
+        <div id="preset-name">—</div>
+        <span id="preset-tag">—</span>
+        <div id="preset-desc">—</div>
+        <div id="preset-verify">—</div>
+      </div>
+    </div>
+
+    <!-- 播放控制 -->
+    <div class="sec">
+      <div class="sec-h">播放</div>
+      <div class="row">
+        <button class="b" id="btn-play">⏸ 暂停</button>
+        <button class="b" id="btn-step">⏭ 单步 ×10</button>
+      </div>
+      <div class="row">
+        <button class="b" id="btn-reset">↺ 重置</button>
+        <button class="b" id="btn-fit">⤢ 适配视图</button>
+      </div>
+      <div class="row">
+        <button class="b" id="btn-cleartrail">🧹 清轨迹</button>
+        <span class="val" style="flex:1;text-align:right;color:var(--fg3);font-size:10px">
+          快捷键 <span class="kbd">空格</span> <span class="kbd">F</span> <span class="kbd">R</span> <span class="kbd">C</span>
+        </span>
+      </div>
+      <div class="row">
+        <label>速度</label>
+        <input type="range" id="speed" min="0" max="100" step="1" value="50">
+        <span class="val" id="speed-val">1.0×</span>
+      </div>
+      <div class="row">
+        <label>步长 dt</label>
+        <input type="range" id="dt-slider" min="0.1" max="3" step="0.05" value="1">
+        <span class="val" id="dt-val">—</span>
+      </div>
+      <div class="row">
+        <label>缩放</label>
+        <input type="range" id="zoom" min="1" max="3000" step="1" value="100">
+        <span class="val" id="zoom-val">—</span>
+      </div>
+    </div>
+
+    <!-- 物理设置 -->
+    <div class="sec">
+      <div class="sec-h">物理内核</div>
+      <div class="row">
+        <label>积分器</label>
+        <select id="integrator"></select>
+      </div>
+      <div id="int-note">—</div>
+      <div class="row" style="margin-top:9px">
+        <label>引力算法</label>
+        <select id="method"></select>
+      </div>
+      <div class="row">
+        <label>BH 开角 θ</label>
+        <input type="range" id="theta" min="0.1" max="0.9" step="0.05" value="0.5">
+        <span class="val" id="theta-val">0.50</span>
+      </div>
+      <div class="sec-h" style="margin-top:14px">显示</div>
+      <label class="chk"><input type="checkbox" id="opt-trails" checked> 轨迹拖尾</label>
+      <label class="chk"><input type="checkbox" id="opt-vectors"> 速度矢量</label>
+      <label class="chk"><input type="checkbox" id="opt-glow" checked> 天体光晕</label>
+    </div>
+
+    <!-- 守恒量诊断 -->
+    <div class="sec">
+      <div class="sec-h">守恒量诊断</div>
+      <div id="diag">
+        <span class="k">算法</span><span class="v" id="d-method">—</span>
+        <span class="k">积分器</span><span class="v" id="d-int">—</span>
+        <span class="k">θ</span><span class="v" id="d-theta">—</span>
+        <div class="sep"></div>
+        <span class="k">ΔE/E</span><span class="v" id="d-energy">—</span>
+        <span class="k">ΔP/P</span><span class="v" id="d-momentum">—</span>
+        <span class="k">ΔL/L</span><span class="v" id="d-angmom">—</span>
+        <span class="k">质心漂移</span><span class="v" id="d-com">—</span>
+        <div class="sep"></div>
+        <span class="k">动能 T</span><span class="v" id="d-ekin">—</span>
+        <span class="k">势能 U</span><span class="v" id="d-epot">—</span>
+      </div>
+      <div id="note">
+        辛积分器（Verlet / PEFRL）的能量误差<b>有界振荡</b>——长时间积分不累积。
+        切到半隐式 Euler 或 RK4 对比，能看到误差随时间持续增长。
+      </div>
+    </div>
+
+    <!-- 参数 -->
+    <div class="sec">
+      <div class="sec-h">场景参数</div>
+      <div id="cfg">
+        <span class="k">N</span><span class="v" id="cfg-n">—</span>
+        <span class="k">G</span><span class="v" id="cfg-g">—</span>
+        <span class="k">软化 ε</span><span class="v" id="cfg-eps">—</span>
+        <span class="k">试探阈值</span><span class="v" id="cfg-masseps">—</span>
+        <span class="k">基础 dt</span><span class="v" id="cfg-dt">—</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="src/core.js"></script>
+<script src="src/integrators.js"></script>
+<script src="src/bh.js"></script>
+<script src="src/sim.js"></script>
+<script src="src/presets.js"></script>
+<script src="src/render.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
